@@ -10,6 +10,7 @@ import time
 
 sock = sk.socket(sk.AF_INET, sk.SOCK_DGRAM)
 surveys = {}
+devices_ips = []
 bufferSizeCloud = 1024
 bufferSizeDevice = 4096
 
@@ -36,7 +37,21 @@ def sendToCloud(header):
     print (response)
     print("Transmission took %g seconds" %(time.time() - now))
     clientsocket.close()
-
+    
+def processData(received):
+    splitted_received = received.split("-")
+    print (received)
+    if splitted_received[0] == "Dev":
+        if splitted_received[1] in devices_ips:
+            return "IP_ERROR"
+        else:
+            devices_ips.append(splitted_received[1])
+            return "ACK"
+    else:
+        surveys[splitted_received[0]] = received[received.index("-")+1:]
+        print(surveys)
+        return "ACK"
+    
 server_address = ('localhost', 10000) 
 print ('\n\r starting up on %s port %s' % server_address)
 sock.bind(server_address)
@@ -46,14 +61,11 @@ while True:
     print("Size of transmission buffer: %d" %bufferSizeDevice)
     data, address = sock.recvfrom(bufferSizeDevice)
     print('received %s bytes from %s' % (len(data), address))
-    print (data.decode('utf8'))
-    surveys[data.decode('utf8').split('-')[0]] = data.decode('utf8')[data.decode('utf8').index("-")+1:]
-    print(surveys)
+    data1 = processData(data.decode('utf8'))
     if data:
-        data1='ACK'
         sent = sock.sendto(data1.encode(), address)
         print ('sent %s bytes back to %s' % (sent, address))
-    if (len(surveys) % 4) == 0:
+    if len(surveys) == 4:
         sendToCloud(generateHeader())
         surveys.clear()
          
