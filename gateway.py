@@ -13,15 +13,16 @@ surveys = {}
 devices_ips = []
 bufferSizeCloud = 1024
 bufferSizeDevice = 4096
-
 gateway_ip = '10.10.10.1'
 
+#Genera un header TCP con in testa l'indirizzo ip del gateway
 def generateHeader():
     header = gateway_ip
     for element in surveys.keys():
         header = header + '%' + element + '-' + surveys[element]
     return header
         
+#Funzione che svolge l'intera parte di Client TCP(creazione socket, connessione al cloud, invio messaggio...)
 def sendToCloud(header):
     try:
         clientsocket = sk.socket(sk.AF_INET, sk.SOCK_STREAM)
@@ -56,6 +57,7 @@ server_address = ('localhost', 10000)
 print ('\n\r starting up on %s port %s' % server_address)
 sock.bind(server_address)
  
+#Ricezione messaggi da parte dei device (server UDP) ed eventuale invio dei dati (client TCP)
 while True:
     print('\n\r waiting to receive message...')
     print("Size of transmission buffer: %d" %bufferSizeDevice)
