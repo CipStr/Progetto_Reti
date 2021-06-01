@@ -11,7 +11,7 @@ import time
 socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 server_address = ('localhost', 10000)
 bufferSize = 4096
-
+#Controllo della classe dell'indirizzo IP e invio di un messaggio di conferma al gateway (per evitare di utilizzare un indirizzo IP già in uso)
 def checkIp(ip):
     splitted_ip = host_ip.split(".")
     if len(splitted_ip) != 4 or splitted_ip[0]+ splitted_ip[1] + splitted_ip[2] != '1921681':
@@ -44,7 +44,9 @@ while True:
 while True:
     time.sleep(10)
     try:
+        #Teniamo traccia dell'orario al momento di invio del messaggio
         now = time.time()
+        #Apertura(ed eventuale creazione) di un file per salvare i dati campionati dal dispositivo
         file = open("Device" + host_ip.replace(".", "_") + ".txt", "w+")
         file.write(dc.generateDatagram(dc.collectData(), host_ip))
         file.seek(0)
@@ -53,6 +55,7 @@ while True:
         print("Size of transmission buffer: %d" %bufferSize)
         data, server = socket.recvfrom(bufferSize)
         print('received message "%s"' % data.decode('utf8'))
+         #Calcolo del tempo impiegato per la trasmissione
         print("Transmission took %g seconds" %(time.time() - now))
     except Exception as info :
         print(info)

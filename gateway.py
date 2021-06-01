@@ -37,7 +37,7 @@ def sendToCloud(header):
     print (response)
     print("Transmission took %g seconds" %(time.time() - now))
     clientsocket.close()
-    
+#Funzione per controllare il messaggio ricevuto dal device, controlla la presenza o meno di una keyword (Dev) e la presenza dell'indirizzo IP tra quelli già usati
 def processData(received):
     splitted_received = received.split("-")
     print (received)
